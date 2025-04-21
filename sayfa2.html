@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Kayıt Bilgileri</title>
+</head>
+<body>
+    <h2>Kayıt Bilgilerin</h2>
+    
+    <p><strong>İsim:</strong> <span id="gelenIsim"></span></p>
+    <p><strong>Email:</strong> <span id="gelenEmail"></span></p>
+    <p><strong>Şifre:</strong> <span id="gelenSifre"></span></p>
+
+    <script>
+        // LocalStorage'dan verileri al
+        const isim = localStorage.getItem("isim");
+        const email = localStorage.getItem("email");
+        const sifre = localStorage.getItem("sifre");
+
+        // Verileri sayfada göster
+        document.getElementById("gelenIsim").textContent = isim;
+        document.getElementById("gelenEmail").textContent = email;
+        document.getElementById("gelenSifre").textContent = sifre;
+    </script>
+</body>
+</html>
