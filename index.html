@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Kayıt Formu</title>
+</head>
+<body>
+    <h2>Kayıt Ol</h2>
+    <form onsubmit="return kayitYap()">
+        <label for="isim">İsim:</label><br>
+        <input type="text" id="isim" name="isim" required><br><br>
+
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="sifre">Şifre:</label><br>
+        <input type="password" id="sifre" name="sifre" required><br><br>
+
+        <input type="submit" value="Kayıt Ol">
+    </form>
+
+    <script>
+        function kayitYap() {
+            // Form verilerini al
+            const isim = document.getElementById("isim").value;
+            const email = document.getElementById("email").value;
+            const sifre = document.getElementById("sifre").value;
+
+            // Verileri localStorage'a kaydet
+            localStorage.setItem("isim", isim);
+            localStorage.setItem("email", email);
+            localStorage.setItem("sifre", sifre);
+
+            // Sayfayı 2'ye yönlendir
+            window.location.href = "sayfa2.html";
+
+            return false; // Formun default işlemini engelle (sayfa yenilenmesin)
+        }
+    </script>
+</body>
+</html>
