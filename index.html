@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Basit Tıklama Oyunu</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(135deg, #a1c4fd, #c2e9fb); /* Göz alıcı arka plan */
+    }
+    #button {
+      padding: 15px 30px;
+      font-size: 20px;
+      cursor: pointer;
+      position: absolute;
+    }
+    #score {
+      font-size: 24px;
+      margin-top: 20px;
+      position: fixed;
+      top: 20px;
+      left: 20px;
+    }
+    #timer {
+      font-size: 24px;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tıklama Oyunu</h1>
+  <button id="button">Tıkla!</button>
+  <div id="score">Skor: 0</div>
+  <div id="timer">Süre: 3</div>
+
+  <script>
+    let score = 0;
+    let timeLeft = 3;
+    let interval;
+
+    const button = document.getElementById("button");
+    const scoreDisplay = document.getElementById("score");
+    const timerDisplay = document.getElementById("timer");
+
+    function moveButton() {
+      const x = Math.random() * (window.innerWidth - button.offsetWidth);
+      const y = Math.random() * (window.innerHeight - button.offsetHeight);
+      button.style.left = `${x}px`;
+      button.style.top = `${y}px`;
+    }
+
+    function updateTimer() {
+      clearInterval(interval);
+      timeLeft = Math.max(0.5, 3 - score * 0.1); // Süre skor arttıkça azalır, minimum 0.5 saniye
+      timerDisplay.textContent = `Süre: ${timeLeft.toFixed(1)}`;
+      
+      interval = setInterval(() => {
+        timeLeft -= 0.1;
+        if (timeLeft <= 0) {
+          clearInterval(interval);
+          alert("Oyun bitti! Skorunuz: " + score);
+          location.reload();
+        } else {
+          timerDisplay.textContent = `Süre: ${timeLeft.toFixed(1)}`;
+        }
+      }, 100);
+    }
+
+    button.addEventListener("click", () => {
+      score++;
+      scoreDisplay.textContent = "Skor: " + score;
+      moveButton();
+      updateTimer();
+    });
+
+    // Oyunu başlat
+    moveButton();
+    updateTimer();
+  </script>
+</body>
+</html>
