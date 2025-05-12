@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Basit Tıklama Oyunu</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(135deg, #2c3e50, #1a252f);
+    }
+    #button {
+      padding: 15px 30px;
+      font-size: 20px;
+      cursor: pointer;
+      position: absolute;
+      display: none;
+    }
+    #score, #gold {
+      font-size: 24px;
+      margin-top: 20px;
+      position: fixed;
+      left: 20px;
+    }
+    #score {
+      top: 20px;
+    }
+    #gold {
+      top: 60px;
+    }
+    #timer {
+      font-size: 24px;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: none;
+    }
+    #highscore {
+      font-size: 24px;
+      position: fixed;
+      top: 100px;
+      left: 20px;
+      display: none;
+    }
+    #modeSelect {
+      margin-top: 20px;
+    }
+    #shop {
+      margin-top: 20px;
+    }
+    #shop button {
+      margin: 5px;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tıklama Oyunu</h1>
+
+  <div id="modeSelect">
+    <label for="mode">Oyun Modu Seç:</label>
+    <select id="mode">
+      <option value="normal">Normal</option>
+      <option value="hızlı">Hızlı</option>
+      <option value="zor">Zor</option>
+    </select>
+    <br><br>
+    <label for="size">Düğme Boyutu Seç:</label>
+    <select id="size">
+      <option value="küçük">Küçük</option>
+      <option value="orta" selected>Orta</option>
+      <option value="büyük">Büyük</option>
+    </select>
+    <br><br>
+    <div id="gold">Altın: 0</div>
+    <div id="shop">
+      <span>Mağaza:</span>
+      <button onclick="buySkin('red')">Kırmızı Buton (5 altın)</button>
+      <button onclick="buySkin('green')">Yeşil Buton (5 altın)</button>
+      <button onclick="buySkin('blue')">Mavi Buton (5 altın)</button>
+      <button onclick="buySkin('purple')">Mor Buton (10 altın)</button>
+      <button onclick="buySkin('gradient')">Gradyan Buton (15 altın)</button>
+    </div>
+    <br>
+    <button onclick="startGame()">Başla</button>
+  </div>
+
+  <button id="button">Tıkla!</button>
+  <div id="score" style="display: none">Skor: 0</div>
+  <div id="timer">Süre: 3</div>
+  <div id="highscore">En Yüksek Skor: 0</div>
+
+  <script>
+    let score = 0;
+    let timeLeft = 3;
+    let interval;
+    let baseTime = 3;
+    let gold = parseInt(localStorage.getItem("gold")) || 0;
+    let highScore = localStorage.getItem("highScore") || 0;
+    let buttonSkin = localStorage.getItem("buttonSkin") || "";
+
+    const button = document.getElementById("button");
+    const scoreDisplay = document.getElementById("score");
+    const goldDisplay = document.getElementById("gold");
+    const timerDisplay = document.getElementById("timer");
+    const highScoreDisplay = document.getElementById("highscore");
+    const modeSelect = document.getElementById("modeSelect");
+    const modeDropdown = document.getElementById("mode");
+    const sizeDropdown = document.getElementById("size");
+
+    let currentMode = "normal";
+
+    goldDisplay.textContent = "Altın: " + gold;
+    highScoreDisplay.textContent = "En Yüksek Skor: " + highScore;
+
+    function moveButton() {
+      const padding = 50;
+      const maxX = window.innerWidth - button.offsetWidth - padding;
+      const maxY = window.innerHeight - button.offsetHeight - padding;
+      const x = Math.random() * maxX + padding / 2;
+      const y = Math.random() * maxY + padding / 2;
+      button.style.left = `${x}px`;
+      button.style.top = `${y}px`;
+    }
+
+    function updateTimer() {
+      clearInterval(interval);
+      let reductionFactor = score * 0.01;
+      let adjustedTime = Math.max(0.5, baseTime - score * 0.1 - reductionFactor);
+      timeLeft = adjustedTime;
+      timerDisplay.textContent = `Süre: ${timeLeft.toFixed(1)}`;
+
+      interval = setInterval(() => {
+        timeLeft -= 0.1;
+        if (timeLeft <= 0) {
+          clearInterval(interval);
+          if (score > highScore) {
+            localStorage.setItem("highScore", score);
+            alert("Yeni en yüksek skor! Skorunuz: " + score);
+          } else {
+            alert("Oyun bitti! Skorunuz: " + score);
+          }
+          localStorage.setItem("gold", gold);
+          location.reload();
+        } else {
+          timerDisplay.textContent = `Süre: ${timeLeft.toFixed(1)}`;
+        }
+      }, 100);
+    }
+
+    function updateButtonSkin() {
+      if (buttonSkin === "red") button.style.backgroundColor = "red";
+      else if (buttonSkin === "green") button.style.backgroundColor = "green";
+      else if (buttonSkin === "blue") button.style.backgroundColor = "blue";
+      else if (buttonSkin === "purple") button.style.backgroundColor = "purple";
+      else if (buttonSkin === "gradient") button.style.backgroundImage = "linear-gradient(to right, red, yellow)";
+      else {
+        button.style.backgroundColor = "";
+        button.style.backgroundImage = "";
+      }
+    }
+
+    function buySkin(color) {
+      const prices = { red: 5, green: 5, blue: 5, purple: 10, gradient: 15 };
+      if (gold >= prices[color]) {
+        gold -= prices[color];
+        buttonSkin = color;
+        localStorage.setItem("buttonSkin", buttonSkin);
+        localStorage.setItem("gold", gold);
+        updateButtonSkin();
+        goldDisplay.textContent = "Altın: " + gold;
+      } else {
+        alert("Yeterli altının yok!");
+      }
+    }
+
+    button.addEventListener("click", () => {
+      score++;
+      scoreDisplay.textContent = "Skor: " + score;
+
+      let goldIncrement = 0;
+      if (currentMode === "zor" && score % 2 === 0) goldIncrement = 1;
+      else if (currentMode === "hızlı" && score % 5 === 0) goldIncrement = 1;
+      else if (currentMode === "normal" && score % 10 === 0) goldIncrement = 1;
+      gold += goldIncrement;
+      if (goldIncrement) {
+        goldDisplay.textContent = "Altın: " + gold;
+      }
+
+      moveButton();
+      updateTimer();
+    });
+
+    function startGame() {
+      currentMode = modeDropdown.value;
+      const selectedSize = sizeDropdown.value;
+
+      if (currentMode === "normal") baseTime = 3;
+      else if (currentMode === "hızlı") baseTime = 2;
+      else if (currentMode === "zor") baseTime = 1.5;
+
+      if (selectedSize === "küçük") {
+        button.style.padding = "8px 16px";
+        button.style.fontSize = "14px";
+      } else if (selectedSize === "orta") {
+        button.style.padding = "15px 30px";
+        button.style.fontSize = "20px";
+      } else if (selectedSize === "büyük") {
+        button.style.padding = "25px 50px";
+        button.style.fontSize = "26px";
+      }
+
+      modeSelect.style.display = "none";
+      button.style.display = "inline-block";
+      scoreDisplay.style.display = "block";
+      timerDisplay.style.display = "block";
+      highScoreDisplay.style.display = "block";
+
+      updateButtonSkin();
+      moveButton();
+      updateTimer();
+    }
+  </script>
+</body>
+</html>
